@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- Bảng mã giúp hiển thị tiếng Việt đúng -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Responsive trên mobile -->
+    <title>Pulse / Ripple Loader</title>
+
+    <style>
+      /* Thiết lập cơ bản để đo kích thước trực quan, tránh tràn do border/padding */
+      * {
+        box-sizing: border-box; /* Tính border + padding trong width/height của phần tử */
+        margin: 0; /* Xóa margin mặc định của trình duyệt */
+        padding: 0; /* Xóa padding mặc định */
+      }
+
+      /* Toàn trang: canh giữa loader và đặt màu nền theo mẫu */
+      body {
+        min-height: 100vh; /* Chiều cao tối thiểu bằng chiều cao cửa sổ */
+        display: flex; /* Dùng Flexbox để canh giữa */
+        justify-content: center; /* Canh giữa theo trục ngang */
+        align-items: center; /* Canh giữa theo trục dọc */
+        background: #0d1b2a; /* Nền xanh đậm như ảnh mẫu */
+        font-family: system-ui, sans-serif; /* Font trung tính (không bắt buộc) */
+      }
+
+      /* Khung chứa toàn bộ hiệu ứng */
+      .pulse {
+        position: relative; /* Làm mốc định vị cho pseudo-elements (vòng ripple) */
+        width: 90px; /* Kích thước “sân khấu” của hiệu ứng */
+        height: 90px;
+        /* Gợi ý hiệu năng: trình duyệt chuẩn bị tối ưu hoá transform/opacity */
+        will-change: transform, opacity;
+      }
+
+      /* Chấm sáng ở giữa */
+      .pulse .dot {
+        position: absolute; /* Định vị tương đối so với .pulse */
+        left: 50%;
+        top: 50%; /* Đặt tâm chấm vào giữa khung */
+        transform: translate(
+          -50%,
+          -50%
+        ); /* Dịch ngược 1/2 kích thước để thật sự vào tâm */
+        width: 30px;
+        height: 30px; /* Kích thước chấm */
+        background: #39e6f1; /* Màu xanh cyan nổi bật như ảnh mẫu */
+        border-radius: 50%; /* Bo tròn thành hình tròn */
+        box-shadow: 0 0 20px rgba(57, 230, 241, 0.6); /* Ánh sáng mờ quanh chấm */
+        animation: throb 1.2s ease-in-out infinite;
+        /* throb: nhịp phồng nhẹ cho chấm giữa
+         1.2s: thời lượng một chu kỳ
+         ease-in-out: vào/ra mượt
+         infinite: lặp vô hạn */
+      }
+
+      /* Hai vòng lan toả (ripple) dùng pseudo-elements để không cần thêm markup */
+      .pulse::before,
+      .pulse::after {
+        content: ""; /* Bắt buộc để tạo pseudo-element */
+        position: absolute; /* Định vị tự do bên trong .pulse */
+        left: 50%;
+        top: 50%; /* Đặt tâm vòng vào giữa */
+        width: 80px;
+        height: 80px; /* Kích thước “vòng cơ sở” (sẽ scale khi animate) */
+        border-radius: 50%; /* Tạo hình tròn */
+        border: 12px solid rgba(57, 230, 241, 0.18);
+        /* Viền dày tạo cảm giác vòng sáng; dùng alpha thấp để mềm mại */
+        transform: translate(-50%, -50%) scale(0.35);
+        /* Bắt đầu nhỏ ở giữa, sau đó phình ra bằng keyframes */
+        opacity: 0.9; /* Độ rõ ban đầu */
+        animation: ripple 1.8s ease-out infinite;
+        /* ripple: vòng tròn nở ra và mờ dần
+         1.8s: thời lượng mỗi vòng ripple
+         ease-out: đầu nhanh, về sau chậm → tự nhiên hơn
+         infinite: lặp vô hạn */
+      }
+
+      /* Vòng thứ hai trễ đi một chút để tạo hiệu ứng luân phiên */
+      .pulse::after {
+        animation-delay: 0.9s; /* Trễ bằng nửa chu kỳ của ripple → 2 vòng đuổi nhau */
+      }
+
+      /* Keyframes cho vòng lan toả */
+      @keyframes ripple {
+        0% {
+          transform: translate(-50%, -50%) scale(0.35); /* Nhỏ ở giữa */
+          opacity: 0.9; /* Khá rõ */
+        }
+        70% {
+          opacity: 0.25; /* Mờ dần khi nở ra */
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1.65); /* Nở lớn ra ngoài */
+          opacity: 0; /* Tan biến */
+        }
+      }
+
+      /* Nhịp “throb” (phồng/thu nhẹ) cho chấm ở giữa để sống động hơn */
+      @keyframes throb {
+        0% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+        50% {
+          transform: translate(-50%, -50%) scale(1.08);
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="pulse">
+      <span class="dot"></span>
+    </div>
+  </body>
+</html>
